@@ -19,7 +19,7 @@ jobs:
         mkdir -p ~/.ssh
         
         # Copy the hr.pem file from the repository to the SSH folder
-        cp ./ssh/hr.pem ~/.ssh/
+        cp hr.pem ~/.ssh/
 
         # Set the correct permissions for the private key
         chmod 600 hr.pem
