@@ -1,59 +1,8 @@
-name: SSH to Azure VM and Deploy API
-
-on:
-  push:
-    branches:
-      - main  # Trigger this workflow on push to the 'main' branch
-
-jobs:
-  ssh-to-azure-vm:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        cp hr.pem ~/.ssh/
-        chmod 600 hr.pem
-
-    - name: Add Azure VM to known hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -H 20.55.1.67 >> ~/.ssh/known_hosts
-
-    - name: SSH into Azure VM and Deploy API
-      run: |
-        ssh -o StrictHostKeyChecking=no -i hr.pem azureuser@20.55.1.67 << 'EOF'
-          # Update the VM
-          sudo apt update
-          sudo apt upgrade -y
-          
-          # Install Node.js (with npm)
-          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-          sudo apt install -y nodejs
-
-          # Install Nginx (if using Nginx as reverse proxy)
-          sudo apt install -y nginx
-
-          # Navigate to your project directory (adjust this to your project's location)
-          cd ../../  # Replace with the correct path
-
-          # Install dependencies using npm
-          npm install
-
-          # Start the Node.js API (use pm2 for better management in production)
-          nohup node index.js &
-
-          # Allow HTTP traffic through the firewall
-          sudo ufw allow 80/tcp
-
-          # Restart Nginx (if needed)
-          sudo systemctl restart nginx
-        EOF
-
-    - name: Test the API is running
-      run: |
-        curl http://20.55.1.67/sayHello
+- name: Copy project files to Azure VM
+  uses: appleboy/scp-action@master
+  with:
+    host: 20.55.1.67
+    username: azureuser
+    key: hr.pem
+    source: "./simple-backend-api/*"
+    target: "/home/azureuser/simple-backend-api/"
