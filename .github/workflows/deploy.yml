@@ -23,7 +23,9 @@ jobs:
 
       - name: Add Azure VM to known hosts
         run: |
-          ssh-keyscan -H 20.55.1.67 >> ~/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa -H 20.55.1.67 >> ~/.ssh/known_hosts || true
+
 
       - name: Copy project files to Azure VM
         uses: appleboy/scp-action@master
