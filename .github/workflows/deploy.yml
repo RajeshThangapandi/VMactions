@@ -11,57 +11,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up SSH key
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }} # Ensure hr.pem is saved in Secrets as SSH_KEY
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/hr.pem
+          echo "your-private-key" > ~/.ssh/hr.pem
           chmod 600 ~/.ssh/hr.pem
 
       - name: Add Azure VM to known hosts
         run: |
           ssh-keyscan -t rsa -H 20.55.1.67 >> ~/.ssh/known_hosts || true
 
-      - name: List files in the source directory
-        run: |
-          ls -R ./simple-backend-api/
+      - name: Debug - List files in the current directory
+        run: ls -R
 
-      - name: Copy project files to Azure VM
-        uses: appleboy/scp-action@master
-        with:
-          host: 20.55.1.67
-          username: azureuser
-          key: ~/.ssh/hr.pem
-          source: "./simple-backend-api"
-          target: "/home/azureuser/simple-backend-api/"
+      - name: List files in the backend directory
+        run: ls -R ./simple-backend-api/
 
-      - name: SSH into Azure VM and Deploy API
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/hr.pem azureuser@20.55.1.67 << 'EOF'
-            # Update and install required packages
-            sudo apt update && sudo apt upgrade -y
-            curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-            sudo apt install -y nodejs nginx
-
-            # Navigate to the app directory
-            cd /home/azureuser/simple-backend-api
-
-            # Install dependencies
-            npm install
-
-            # Start the API in the background
-            nohup node index.js &
-
-            # Allow HTTP traffic through the firewall
-            sudo ufw allow 80/tcp
-            
-            # Restart Nginx if needed
-            sudo systemctl restart nginx || echo "Nginx service not found or failed to restart."
-          EOF
-
-      - name: Test the API is running
-        run: |
-          curl http://20.55.1.67/sayHello
+      # Your other deployment steps follow...
