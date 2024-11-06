@@ -31,17 +31,26 @@ jobs:
           sudo apt update
           sudo apt upgrade -y
           
+          # Install Node.js (with npm)
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt install -y nodejs
+
+          # Install Nginx (if you plan to use it)
+          sudo apt install -y nginx
+
           # Navigate to the backend directory (adjust this path to your app's location)
           cd /
 
-          # Install dependencies (adjust according to your app's requirements)
+          # Install dependencies using npm
           npm install
 
           # Start the API (assuming it's a Node.js app)
           nohup node index.js &
 
-          # Ensure the app is running on port 80
+          # Allow HTTP traffic through the firewall
           sudo ufw allow 80/tcp
+          
+          # Restart Nginx to ensure it's working as expected
           sudo systemctl restart nginx
         EOF
 
