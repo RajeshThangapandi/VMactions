@@ -1,9 +1,3 @@
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,14 +16,24 @@ jobs:
 
       - name: Set up SSH key
         run: |
+          # Create the .ssh directory if it doesn't exist
           mkdir -p ~/.ssh
+          
+          # Output the private key to verify it's correctly passed
+          echo "$SSH_PRIVATE_KEY"  # This is for debugging; remove after verification
+          
+          # Write the SSH private key to the id_rsa file
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          
+          # Set proper permissions for the private key
           chmod 600 ~/.ssh/id_rsa
+          
+          # Add the VM host to the known_hosts file to avoid SSH warnings
           ssh-keyscan -H $VM_HOST >> ~/.ssh/known_hosts
+          
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VM_HOST: ${{ secrets.VM_HOST }}
-          VM_USER: ${{ secrets.VM_USER }}
 
       - name: Deploy application
         run: |
