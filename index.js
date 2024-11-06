@@ -7,6 +7,6 @@ app.get('/sayHello', (req, res) => {
 });
 
 const PORT = 80;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(80, '0.0.0.0', () => {
+    console.log('Server is running');
 });
