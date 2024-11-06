@@ -80,9 +80,7 @@ MsbivDFd4p7KwGJQWiJs20K8fLfwunoVS0kpI94mHfTIASJ/m5uu3Q==" > ~/.ssh/hr.pem  # Rep
           key: ~/.ssh/hr.pem
           script: |
             cd /home/azureuser/simple-backend-api
-            # Add your deployment commands below
             echo "Deploying API..."
-            # Example commands
             sudo systemctl stop api-service || true
             sudo systemctl start api-service
             sudo systemctl status api-service
