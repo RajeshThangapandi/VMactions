@@ -35,22 +35,22 @@ jobs:
           curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
           sudo apt install -y nodejs
 
-          # Install Nginx (if you plan to use it)
+          # Install Nginx (if using Nginx as reverse proxy)
           sudo apt install -y nginx
 
-          # Navigate to the backend directory (adjust this path to your app's location)
-          cd /
+          # Navigate to your project directory (adjust this to your project's location)
+          cd ../../  # Replace with the correct path
 
           # Install dependencies using npm
           npm install
 
-          # Start the API (assuming it's a Node.js app)
+          # Start the Node.js API (use pm2 for better management in production)
           nohup node index.js &
 
           # Allow HTTP traffic through the firewall
           sudo ufw allow 80/tcp
-          
-          # Restart Nginx to ensure it's working as expected
+
+          # Restart Nginx (if needed)
           sudo systemctl restart nginx
         EOF
 
