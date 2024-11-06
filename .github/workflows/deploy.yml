@@ -22,7 +22,7 @@ jobs:
         cp ./ssh/hr.pem ~/.ssh/
 
         # Set the correct permissions for the private key
-        chmod 600 ~/.ssh/hr.pem
+        chmod 600 hr.pem
 
     - name: Add Azure VM to known hosts
       run: |
@@ -32,7 +32,7 @@ jobs:
     - name: SSH into Azure VM
       run: |
         # Connect to the Azure VM using the hr.pem private key
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/hr.pem azureuser@20.55.1.67 << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i hr.pem azureuser@20.55.1.67 << 'EOF'
           # Add any commands you want to run on the VM here
           echo "Connected successfully!"
           sudo apt update
