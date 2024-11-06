@@ -14,14 +14,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up SSH key
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }} # Ensure hr.pem is saved in Secrets as SSH_KEY
         run: |
           mkdir -p ~/.ssh
-          cp hr.pem ~/.ssh/
+          echo "$SSH_KEY" > hr.pem
           chmod 600 hr.pem
 
       - name: Add Azure VM to known hosts
         run: |
-          mkdir -p ~/.ssh
           ssh-keyscan -H 20.55.1.67 >> ~/.ssh/known_hosts
 
       - name: Copy project files to Azure VM
@@ -36,13 +37,9 @@ jobs:
       - name: SSH into Azure VM and Deploy API
         run: |
           ssh -o StrictHostKeyChecking=no -i hr.pem azureuser@20.55.1.67 << 'EOF'
-            # Update the VM
-            sudo apt update
-            sudo apt upgrade -y
-            
-            # Install Node.js (with npm)
+            sudo apt update && sudo apt upgrade -y
             curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-            sudo apt install -y nodejs
+            sudo apt install -y nodejs nginx
 
             # Navigate to the app directory
             cd /home/azureuser/simple-backend-api
@@ -56,8 +53,8 @@ jobs:
             # Allow HTTP traffic through the firewall
             sudo ufw allow 80/tcp
             
-            # Restart Nginx to ensure it's working as expected
-            sudo systemctl restart nginx
+            # Restart Nginx if needed
+            sudo systemctl restart nginx || echo "Nginx service not found or failed to restart."
           EOF
 
       - name: Test the API is running
