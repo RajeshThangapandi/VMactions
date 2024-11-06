@@ -15,10 +15,10 @@ jobs:
 
     - name: Set up SSH
       run: |
-        echo "$SSH_PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
+        echo "$SSH_PRIVATE_KEY" > challenge.pem
+        chmod 600 challenge.pem
         eval "$(ssh-agent -s)"
-        ssh-add private_key.pem
+        ssh-add challenge.pem
 
     - name: Deploy to VM
       run: |
